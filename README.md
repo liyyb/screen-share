@@ -105,7 +105,7 @@ node server/main.mjs
 HOST=0.0.0.0 PORT=3000 node server/main.mjs
 ```
 
-- 主机：浏览器打开 `http://localhost:3000` → 开始共享 → 复制邀请链接（形如 `http://192.168.3.29:3000/join/XXXXXX`）。
+- 主机：浏览器打开 `http://localhost:3000` → 开始共享 → 复制邀请链接（形如 `http://<主机局域网IP>:3000/join/XXXXXX`）。
 - 观众：手机连同一路由器/热点的 WiFi，Chrome 打开邀请链接。
 - `PUBLIC_ORIGIN` 决定邀请链接的域名，务必填主机在局域网里的真实 IP（`ipconfig` 查）。
 

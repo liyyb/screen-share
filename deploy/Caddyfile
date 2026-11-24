@@ -1,0 +1,7 @@
+# 把下面域名换成你的真实域名（需已解析到本服务器）
+share.example.com {
+    # 反代到信令服务；flush_interval -1 关闭响应缓冲，SSE 长连接必须
+    reverse_proxy share:3000 {
+        flush_interval -1
+    }
+}

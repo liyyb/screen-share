@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>SHARE · 低延迟屏幕共享</title>
+  <link rel="stylesheet" href="/app.css">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="SHARE 首页">SHARE<span class="brand-dot">.</span></a>
+    <div class="topbar-actions">
+      <button id="theme-toggle" class="icon-btn" aria-label="切换深浅主题" title="切换主题"></button>
+    </div>
+  </header>
+
+  <main>
+    <!-- 首页 -->
+    <section id="view-landing" class="view active">
+      <div class="landing-inner">
+        <p class="eyebrow">SCREEN SHARING · 低延迟 · 不上传</p>
+        <h1>把屏幕，递给对面。</h1>
+        <p class="lede">选一个窗口，把链接发给对方。无需注册，打开就能看。</p>
+        <div class="hero-actions">
+          <button id="btn-start" class="btn primary large">
+            <span>开始共享</span>
+          </button>
+          <button id="btn-join" class="btn secondary large">输入房间码加入</button>
+        </div>
+        <div class="capacity-row">
+          <label for="capacity-select">可加入人数</label>
+          <select id="capacity-select" aria-label="可加入人数">
+            <option value="1">1 人</option>
+            <option value="2">2 人</option>
+            <option value="3" selected>3 人</option>
+            <option value="4">4 人</option>
+          </select>
+          <label for="quality-select">画质</label>
+          <select id="quality-select" aria-label="共享画质"></select>
+        </div>
+        <details id="invite-settings" class="invite-settings">
+          <summary>邀请地址设置 <span id="invite-mode-summary">自动选择</span></summary>
+          <div class="invite-settings-body">
+            <div class="invite-modes" role="group" aria-label="邀请地址模式">
+              <label><input type="radio" name="invite-mode" value="auto" checked> 自动选择</label>
+              <label><input type="radio" name="invite-mode" value="manual"> 手动填写</label>
+            </div>
+            <p id="invite-auto-help" class="hint">使用启动时选定的局域网或公网地址。</p>
+            <div id="invite-manual" hidden>
+              <label class="field-label" for="invite-origin">观众访问地址</label>
+              <input id="invite-origin" type="url" maxlength="512" placeholder="http://26.x.x.x:3000"
+                     autocomplete="off" spellcheck="false" aria-describedby="invite-origin-feedback invite-origin-help">
+              <p id="invite-origin-feedback" class="hint invite-preview" aria-live="polite"></p>
+              <p id="invite-origin-help" class="hint">Radmin 用户填写主机的虚拟 IP 和服务端口。观众需加入同一 Radmin 网络。</p>
+            </div>
+          </div>
+        </details>
+        <div id="join-panel" class="join-panel">
+          <label for="code-input" class="field-label">6 位房间码</label>
+          <div class="join-row">
+            <input id="code-input" class="code-input" maxlength="6" placeholder="ABC234"
+                   autocomplete="off" autocapitalize="characters" spellcheck="false"
+                   aria-label="6 位房间码">
+            <button id="join-submit" class="btn primary">加入</button>
+          </div>
+          <p class="hint">支持粘贴、小写自动转大写</p>
+        </div>
+        <ol class="steps">
+          <li><span class="step-num">01</span>选一个窗口</li>
+          <li><span class="step-num">02</span>把链接发过去</li>
+          <li><span class="step-num">03</span>对面打开就看</li>
+        </ol>
+        <p class="footnote">提示：请在 Chrome / Edge 中使用。声音仅在共享标签页时可用。<br>持有房间码或邀请链接的人都能观看，请勿发给陌生人。</p>
+      </div>
+    </section>
+
+    <!-- 主机页 -->
+    <section id="view-host" class="view">
+      <div class="statusbar">
+        <span class="status-left">
+          <span class="dot" id="host-dot"></span>
+          <span id="host-watching">等待观众加入</span>
+        </span>
+        <span class="status-right">
+          <span class="status-item">房间 <b id="host-code" class="mono">——</b></span>
+          <span class="invite-actions">
+            <button id="host-copy" class="status-link" title="复制邀请链接">复制链接</button>
+            <button type="button" id="host-qr" class="status-link invite-qr-button" popovertarget="host-qr-panel" aria-label="显示邀请二维码" title="显示邀请二维码">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M6.5 6.5h.01 M17.5 6.5h.01 M6.5 17.5h.01 M14 14h3v3h4 M14 21h3v-2 M21 14v.01 M21 21v.01"/>
+              </svg>
+            </button>
+          </span>
+          <button id="host-details-toggle" class="status-link" title="连接详情">详情</button>
+        </span>
+      </div>
+      <div id="host-qr-panel" popover role="group" aria-labelledby="host-qr-title">
+        <div class="invite-qr-heading">
+          <strong id="host-qr-title">扫码观看共享</strong>
+          <button type="button" class="status-link" popovertarget="host-qr-panel" popovertargetaction="hide">关闭</button>
+        </div>
+        <div id="host-qr-image"></div>
+        <p id="host-qr-note" role="status">正在生成二维码…</p>
+      </div>
+      <div id="inline-status" class="inline-status" role="status" aria-live="polite"></div>
+      <div class="stage-wrap">
+        <div class="video-stage">
+          <span id="host-source" class="stage-label">正在共享</span>
+          <video id="host-preview" class="stage-video" autoplay muted playsinline></video>
+        </div>
+      </div>
+      <div id="host-details" class="details">
+        <div class="details-head">连接详情 <span class="muted">每 2 秒更新</span></div>
+        <p class="hint invite-preview">邀请入口 <span id="host-invite-origin"></span></p>
+        <div class="stat-table">
+          <div class="stat-row stat-header"><span>观众</span><span>RTT</span><span>路径</span><span>帧率</span><span>码率</span></div>
+          <div id="host-stats"><div class="muted">暂无观众连接</div></div>
+        </div>
+        <button id="host-diagnostic" class="text-btn">复制诊断信息</button>
+      </div>
+      <div class="controlbar">
+        <button id="host-pause" class="btn ghost" aria-pressed="false"></button>
+        <button id="host-audio" class="btn ghost"></button>
+        <label class="quality-field">
+          <span>画质</span>
+          <select id="host-quality-select" aria-label="共享画质"></select>
+        </label>
+        <button id="host-stop" class="btn danger"><span>停止共享</span></button>
+      </div>
+    </section>
+
+    <!-- 观众页 -->
+    <section id="view-viewer" class="view">
+      <div class="viewer-shell" id="viewer-stage">
+        <video id="viewer-video" class="viewer-video" autoplay muted playsinline></video>
+        <div id="viewer-pause-mask" class="pause-mask">
+          <div class="pause-card">
+            <div class="pause-title">演示者已暂停画面和声音</div>
+            <div class="pause-sub">恢复后将继续播放</div>
+          </div>
+        </div>
+        <button id="viewer-play" class="play-button" aria-label="播放画面">播放画面</button>
+        <div class="viewer-top">
+          <span class="viewer-status mono" id="viewer-status">正在加入…</span>
+          <span class="viewer-code mono">房间 <b id="viewer-code">——</b></span>
+        </div>
+        <div id="inline-status-viewer" class="inline-status" role="status" aria-live="polite"></div>
+        <div id="viewer-controls" class="viewer-controls">
+          <button id="viewer-mute" class="viewer-btn" title="静音"></button>
+          <button id="viewer-fullscreen" class="viewer-btn" title="全屏">全屏</button>
+          <button id="viewer-stats-toggle" class="viewer-btn" title="连接详情">详情</button>
+          <button id="viewer-exit" class="viewer-btn" title="退出">退出</button>
+        </div>
+        <div id="viewer-details" class="viewer-details">
+          <div id="viewer-stats" class="stat-line"><span>—</span><span>—</span><span>—</span><span>—</span></div>
+          <span class="muted">RTT · 路径 · 帧率 · 码率</span>
+          <button id="viewer-record" class="viewer-btn" title="本地录制">本地录制</button>
+          <span id="viewer-rec-time" class="mono rec-time"></span>
+          <button id="viewer-diagnostic" class="text-btn">复制诊断信息</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
